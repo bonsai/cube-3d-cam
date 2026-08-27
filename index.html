@@ -9,12 +9,14 @@
 <body>
   <video id="webcam" autoplay playsinline muted></video>
   <canvas id="screen"></canvas>
+  <canvas id="knowledge-graph"></canvas>
 
   <div id="hud">
     <strong>MEDIA → MOTION</strong>
     <span id="status">MediaPipeを初期化中…</span>
     <span id="coords"></span>
     <span id="gesture"></span>
+    <span id="graph-status"></span>
   </div>
 
   <div id="help">
@@ -22,7 +24,7 @@
     <span>手を上下 → 傾き</span>
     <span>親指＋人差し指 → ズーム</span>
     <span>両手 → スケール</span>
-    <span>F / R → モード / 色</span>
+    <span>GRAPH時：人差し指 → ノード選択 / 手の移動 → グラフ回転</span>
   </div>
 
   <div id="controls">
@@ -30,11 +32,13 @@
       <button class="mode-btn active" data-mode="cube">cube</button>
       <button class="mode-btn" data-mode="dots">dots</button>
       <button class="mode-btn" data-mode="human">human</button>
+      <button class="mode-btn" data-mode="graph">graph</button>
     </div>
     <button id="rainbow-btn">rainbow</button>
     <button id="camera-btn">camera</button>
   </div>
 
   <script type="module" src="main.js"></script>
+  <script src="graph.js"></script>
 </body>
 </html>
