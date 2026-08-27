@@ -1,0 +1,16 @@
+{
+  "name":"human","label":"Human","control":"puppet",
+  "joints":[
+    {"id":"head","x":0,"y":-130,"z":0,"rod":"head","size":1.8},{"id":"neck","x":0,"y":-100,"z":0,"rod":"head","size":0.8},
+    {"id":"lShoulder","x":-40,"y":-90,"z":0,"rod":"body","size":0.6},{"id":"rShoulder","x":40,"y":-90,"z":0,"rod":"body","size":0.6},
+    {"id":"lElbow","x":-80,"y":-50,"z":0,"rod":"lHand","size":0.6},{"id":"rElbow","x":80,"y":-50,"z":0,"rod":"rHand","size":0.6},
+    {"id":"lWrist","x":-110,"y":-10,"z":0,"rod":"lHand","size":0.7},{"id":"rWrist","x":110,"y":-10,"z":0,"rod":"rHand","size":0.7},
+    {"id":"lFinger","x":-130,"y":10,"z":0,"rod":"lHand","size":0.5},{"id":"rFinger","x":130,"y":10,"z":0,"rod":"rHand","size":0.5},
+    {"id":"chest","x":0,"y":-60,"z":0,"rod":"body","size":0.8},{"id":"hip","x":0,"y":20,"z":0,"rod":"body","size":0.8},
+    {"id":"lHip","x":-25,"y":20,"z":0,"rod":"body","size":0.5},{"id":"rHip","x":25,"y":20,"z":0,"rod":"body","size":0.5},
+    {"id":"lKnee","x":-30,"y":80,"z":0,"rod":"body","size":0.6},{"id":"rKnee","x":30,"y":80,"z":0,"rod":"body","size":0.6},
+    {"id":"lAnkle","x":-35,"y":140,"z":0,"rod":"body","size":0.6},{"id":"rAnkle","x":35,"y":140,"z":0,"rod":"body","size":0.6}
+  ],
+  "bones":[["head","neck"],["neck","lShoulder"],["neck","rShoulder"],["lShoulder","lElbow"],["rShoulder","rElbow"],["lElbow","lWrist"],["rElbow","rWrist"],["lWrist","lFinger"],["rWrist","rFinger"],["neck","chest"],["chest","hip"],["hip","lHip"],["hip","rHip"],["lHip","lKnee"],["rHip","rKnee"],["lKnee","lAnkle"],["rKnee","rAnkle"]],
+  "rods":["head","lHand","rHand","body"]
+}
