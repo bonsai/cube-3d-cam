@@ -10,35 +10,9 @@
   <video id="webcam" autoplay playsinline muted></video>
   <canvas id="screen"></canvas>
   <canvas id="knowledge-graph"></canvas>
-
-  <div id="hud">
-    <strong>MEDIA → MOTION → KNOWLEDGE</strong>
-    <span id="status">MediaPipeを初期化中…</span>
-    <span id="coords"></span>
-    <span id="gesture"></span>
-    <span id="graph-status"></span>
-  </div>
-
-  <div id="help">
-    <span>手を左右 → 回転</span>
-    <span>手を上下 → 傾き</span>
-    <span>親指＋人差し指 → ズーム</span>
-    <span>GRAPH：人差し指で人物を指す → 選択</span>
-    <span>GRAPH：手を動かす → 知識グラフを回転</span>
-    <span>G → GRAPH / F → 次のモード / R → 色</span>
-  </div>
-
-  <div id="controls">
-    <div id="modes">
-      <button class="mode-btn active" data-mode="cube">cube</button>
-      <button class="mode-btn" data-mode="dots">dots</button>
-      <button class="mode-btn" data-mode="human">human</button>
-      <button class="mode-btn" data-mode="graph">graph</button>
-    </div>
-    <button id="rainbow-btn">rainbow</button>
-    <button id="camera-btn">camera</button>
-  </div>
-
+  <div id="hud"><strong>MEDIA → MOTION → KNOWLEDGE</strong><span id="status">MediaPipeを初期化中…</span><span id="coords"></span><span id="gesture"></span><span id="graph-status"></span></div>
+  <div id="help"><span>手を左右 → 回転</span><span>手を上下 → 傾き</span><span>親指＋人差し指 → ズーム</span><span>G → GRAPH / F → 次の形</span></div>
+  <div id="controls"><div id="modes"><button class="mode-btn active" data-mode="cube">⬛ cube</button><button class="mode-btn" data-mode="dots">⠿ dots</button><button class="mode-btn" data-mode="human">🧑 human</button><button class="mode-btn" data-mode="robot">🤖 robot</button><button class="mode-btn" data-mode="graph">🧠 graph</button></div><button id="rainbow-btn">🌈 rainbow</button><button id="camera-btn">camera</button></div>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="main.js"></script>
