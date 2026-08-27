@@ -1,0 +1,11 @@
+{
+  "name":"robot","label":"Robot","control":"puppet",
+  "joints":[
+    {"id":"antenna","x":0,"y":-160,"z":0,"rod":"head","size":0.5},{"id":"head","x":0,"y":-140,"z":0,"rod":"head","size":2},{"id":"lEye","x":-15,"y":-140,"z":10,"rod":"head","size":0.8},{"id":"rEye","x":15,"y":-140,"z":10,"rod":"head","size":0.8},{"id":"neck","x":0,"y":-120,"z":0,"rod":"head","size":0.6},
+    {"id":"torso","x":0,"y":-70,"z":0,"rod":"body","size":1.2},{"id":"lShoulder","x":-50,"y":-100,"z":0,"rod":"body","size":0.8},{"id":"rShoulder","x":50,"y":-100,"z":0,"rod":"body","size":0.8},
+    {"id":"lArm","x":-60,"y":-60,"z":0,"rod":"lHand","size":0.6},{"id":"rArm","x":60,"y":-60,"z":0,"rod":"rHand","size":0.6},{"id":"lClaw","x":-70,"y":-20,"z":0,"rod":"lHand","size":0.9},{"id":"rClaw","x":70,"y":-20,"z":0,"rod":"rHand","size":0.9},
+    {"id":"waist","x":0,"y":-30,"z":0,"rod":"body","size":0.7},{"id":"lHip","x":-30,"y":-20,"z":0,"rod":"body","size":0.6},{"id":"rHip","x":30,"y":-20,"z":0,"rod":"body","size":0.6},{"id":"lLeg","x":-30,"y":40,"z":0,"rod":"body","size":0.6},{"id":"rLeg","x":30,"y":40,"z":0,"rod":"body","size":0.6},{"id":"lFoot","x":-35,"y":90,"z":0,"rod":"body","size":1},{"id":"rFoot","x":35,"y":90,"z":0,"rod":"body","size":1}
+  ],
+  "bones":[["antenna","head"],["head","neck"],["head","lEye"],["head","rEye"],["neck","torso"],["torso","lShoulder"],["torso","rShoulder"],["lShoulder","lArm"],["rShoulder","rArm"],["lArm","lClaw"],["rArm","rClaw"],["torso","waist"],["waist","lHip"],["waist","rHip"],["lHip","lLeg"],["rHip","rLeg"],["lLeg","lFoot"],["rLeg","rFoot"]],
+  "rods":["head","lHand","rHand","body"]
+}
