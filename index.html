@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cube Camera Mode — MediaPipe Motion</title>
+  <title>Cube Camera Mode — Knowledge Graph</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
   <canvas id="knowledge-graph"></canvas>
 
   <div id="hud">
-    <strong>MEDIA → MOTION</strong>
+    <strong>MEDIA → MOTION → KNOWLEDGE</strong>
     <span id="status">MediaPipeを初期化中…</span>
     <span id="coords"></span>
     <span id="gesture"></span>
@@ -23,8 +23,9 @@
     <span>手を左右 → 回転</span>
     <span>手を上下 → 傾き</span>
     <span>親指＋人差し指 → ズーム</span>
-    <span>両手 → スケール</span>
-    <span>GRAPH時：人差し指 → ノード選択 / 手の移動 → グラフ回転</span>
+    <span>GRAPH：人差し指で人物を指す → 選択</span>
+    <span>GRAPH：手を動かす → 知識グラフを回転</span>
+    <span>G → GRAPH / F → 次のモード / R → 色</span>
   </div>
 
   <div id="controls">
@@ -38,7 +39,9 @@
     <button id="camera-btn">camera</button>
   </div>
 
-  <script type="module" src="main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="main.js"></script>
   <script src="graph.js"></script>
 </body>
 </html>
