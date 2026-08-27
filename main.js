@@ -47,51 +47,150 @@ function makeCube() {
   return { points: corners, edges };
 }
 
+// --- Wayang puppet skeleton ---
+// Puppet joints with rest positions
+// Control rods: wrist→body, thumb→left hand, index→right hand, middle→head
+const PUPPET_JOINTS = {
+  head:     { bx: 0, by: -130, bz: 0 },
+  neck:     { bx: 0,   by: -100, bz: 0 },
+  lShoulder:{ bx: -40, by: -90,  bz: 0 },
+  rShoulder:{ bx: 40,  by: -90,  bz: 0 },
+  lElbow:   { bx: -80, by: -50,  bz: 0 },
+  rElbow:   { bx: 80,  by: -50,  bz: 0 },
+  lWrist:   { bx: -110,by: -10,  bz: 0 },
+  rWrist:   { bx: 110, by: -10,  bz: 0 },
+  lFinger:  { bx: -130,by: 10,   bz: 0 },
+  rFinger:  { bx: 130, by: 10,   bz: 0 },
+  chest:    { bx: 0,   by: -60,  bz: 0 },
+  hip:      { bx: 0,   by: 20,   bz: 0 },
+  lHip:     { bx: -25, by: 20,   bz: 0 },
+  rHip:     { bx: 25,  by: 20,   bz: 0 },
+  lKnee:    { bx: -30, by: 80,   bz: 0 },
+  rKnee:    { bx: 30,  by: 80,   bz: 0 },
+  lAnkle:   { bx: -35, by: 140,  bz: 0 },
+  rAnkle:   { bx: 35,  by: 140,  bz: 0 },
+};
+
+const PUPPET_BONES = [
+  ["head","neck"],
+  ["neck","lShoulder"],["neck","rShoulder"],
+  ["lShoulder","lElbow"],["rShoulder","rElbow"],
+  ["lElbow","lWrist"],["rElbow","rWrist"],
+  ["lWrist","lFinger"],["rWrist","rFinger"],
+  ["neck","chest"],
+  ["chest","hip"],
+  ["hip","lHip"],["hip","rHip"],
+  ["lHip","lKnee"],["rHip","rKnee"],
+  ["lKnee","lAnkle"],["rKnee","rAnkle"],
+];
+
+const JOINT_NAMES = Object.keys(PUPPET_JOINTS);
+const JOINT_REST = {};
+for (const name of JOINT_NAMES) {
+  JOINT_REST[name] = { ...PUPPET_JOINTS[name] };
+}
+
+// Puppet state (current positions, spring-animated)
+const puppet = {};
+for (const name of JOINT_NAMES) {
+  puppet[name] = { x: PUPPET_JOINTS[name].bx, y: PUPPET_JOINTS[name].by, z: 0, vx: 0, vy: 0 };
+}
+
+// Control rod targets (set by hand tracking)
+const rodTarget = {
+  body:  { x: 0, y: 0 },
+  head:  { x: 0, y: 0 },
+  lHand: { x: 0, y: 0 },
+  rHand: { x: 0, y: 0 },
+  lFoot: { x: 0, y: 0 },
+  rFoot: { x: 0, y: 0 },
+};
+
 function makeHuman() {
-  const S = 25;
-  const joint = (x, y, z) => ({ bx: x * S, by: y * S, bz: z * S });
-
-  const points = [
-    joint(0, -6, 0),    // 0 head
-    joint(0, -4.5, 0),  // 1 neck
-    joint(-2, -4, 0),   // 2 left shoulder
-    joint(2, -4, 0),    // 3 right shoulder
-    joint(-3.5, -2, 0), // 4 left elbow
-    joint(3.5, -2, 0),  // 5 right elbow
-    joint(-4.5, 0, 0),  // 6 left wrist
-    joint(4.5, 0, 0),   // 7 right wrist
-    joint(0, -1, 0),    // 8 chest
-    joint(0, 1.5, 0),   // 9 hip
-    joint(-1.5, 1.5, 0),// 10 left hip
-    joint(1.5, 1.5, 0), // 11 right hip
-    joint(-1.8, 4, 0),  // 12 left knee
-    joint(1.8, 4, 0),   // 13 right knee
-    joint(-2, 6.5, 0),  // 14 left ankle
-    joint(2, 6.5, 0),   // 15 right ankle
-    joint(-5, 0.5, 0),  // 16 left finger
-    joint(5, 0.5, 0),   // 17 right finger
-  ];
-
-  const edges = [
-    [0,1],       // head-neck
-    [1,2],[1,3], // shoulders
-    [2,4],[3,5], // upper arms
-    [4,6],[5,7], // forearms
-    [6,16],[7,17],// fingers
-    [1,8],       // neck-chest
-    [8,9],       // chest-hip
-    [9,10],[9,11],// hips
-    [10,12],[11,13],// thighs
-    [12,14],[13,15],// shins
-  ];
-
+  const points = JOINT_NAMES.map((n) => ({
+    bx: PUPPET_JOINTS[n].bx,
+    by: PUPPET_JOINTS[n].by,
+    bz: 0,
+  }));
+  const edges = PUPPET_BONES.map(([a, b]) => [
+    JOINT_NAMES.indexOf(a),
+    JOINT_NAMES.indexOf(b),
+  ]);
   return { points, edges };
 }
 
 const shapes = { dots: makeDots(), cube: makeCube(), human: makeHuman() };
 
+// --- Spring physics for puppet ---
+const SPRING_K = 0.12;   // stiffness
+const SPRING_DAMP = 0.7; // damping
+const GRAVITY = 0.3;
+
+function updatePuppet() {
+  const B = 40; // control sensitivity
+
+  // Map hand tracking to rod targets
+  // body rod: wrist position controls torso
+  rodTarget.body.x = handX * B;
+  rodTarget.body.y = handY * B * 0.5;
+
+  // head rod: index finger tip (lm[8]) relative to wrist
+  rodTarget.head.x = (headTipX - handX_raw) * B * 2;
+  rodTarget.head.y = (headTipY - handY_raw) * B * 2;
+
+  // left hand rod: thumb (lm[4])
+  rodTarget.lHand.x = (lThumbX - 0.5) * -B * 3;
+  rodTarget.lHand.y = (lThumbY - 0.5) * -B * 3;
+
+  // right hand rod: index (lm[8])
+  rodTarget.rHand.x = (rIndexX - 0.5) * -B * 3;
+  rodTarget.rHand.y = (rIndexY - 0.5) * -B * 3;
+
+  // Apply springs to each joint
+  for (const name of JOINT_NAMES) {
+    const rest = JOINT_REST[name];
+    const p = puppet[name];
+
+    let targetX = rest.bx;
+    let targetY = rest.by;
+
+    // Which rod influences this joint?
+    if (name === "head" || name === "neck") {
+      targetX += rodTarget.body.x * 0.6 + rodTarget.head.x * 0.4;
+      targetY += rodTarget.body.y * 0.4 + rodTarget.head.y * 0.6;
+    } else if (name === "chest" || name === "hip") {
+      targetX += rodTarget.body.x;
+      targetY += rodTarget.body.y;
+    } else if (name.startsWith("l") && (name.includes("Shoulder") || name.includes("Elbow") || name.includes("Wrist") || name.includes("Finger"))) {
+      const t = name.includes("Finger") ? 1.0 : name.includes("Wrist") ? 0.9 : name.includes("Elbow") ? 0.5 : 0.2;
+      targetX += rodTarget.body.x * (1 - t) + rodTarget.lHand.x * t;
+      targetY += rodTarget.body.y * (1 - t) + rodTarget.lHand.y * t;
+    } else if (name.startsWith("r") && (name.includes("Shoulder") || name.includes("Elbow") || name.includes("Wrist") || name.includes("Finger"))) {
+      const t = name.includes("Finger") ? 1.0 : name.includes("Wrist") ? 0.9 : name.includes("Elbow") ? 0.5 : 0.2;
+      targetX += rodTarget.body.x * (1 - t) + rodTarget.rHand.x * t;
+      targetY += rodTarget.body.y * (1 - t) + rodTarget.rHand.y * t;
+    } else {
+      // legs follow body with some lag
+      targetX += rodTarget.body.x * 0.8;
+      targetY += rodTarget.body.y * 0.5;
+    }
+
+    // Spring force
+    const dx = targetX - p.x;
+    const dy = targetY - p.y;
+    p.vx = (p.vx + dx * SPRING_K) * SPRING_DAMP;
+    p.vy = (p.vy + dy * SPRING_K + GRAVITY) * SPRING_DAMP;
+    p.x += p.vx;
+    p.y += p.vy;
+  }
+}
+
 // --- State ---
 let handX = 0, handY = 0, handPinch = 1;
+let handX_raw = 0, handY_raw = 0;
+let headTipX = 0.5, headTipY = 0.5;
+let lThumbX = 0.5, lThumbY = 0.5;
+let rIndexX = 0.5, rIndexY = 0.5;
 let smoothX = 0, smoothY = 0, smoothPinch = 1;
 let rainbowMode = false;
 let clapCount = 0, lastClapTime = 0;
@@ -128,15 +227,16 @@ function detectClap() {
 
     if (clapCount >= 3) {
       modeIndex = (modeIndex + 1) % MODES.length;
+      document.querySelectorAll(".mode-btn").forEach((b, i) => {
+        b.classList.toggle("active", i === modeIndex);
+      });
       clapCount = 0;
-    } else if (clapCount >= 2 && now - lastClapTime < 1200) {
-      // double clap = rainbow (but triple takes priority, so we defer)
     }
   }
 
-  // resolve double clap after timeout
   if (clapCount === 2 && now - lastClapTime > 800 && now - lastClapTime < 1500) {
     rainbowMode = !rainbowMode;
+    document.getElementById("rainbow-btn").classList.toggle("on", rainbowMode);
     clapCount = 0;
   }
 
@@ -161,13 +261,6 @@ function rotateAll(dot, ax, ay) {
   dot.x = x; dot.y = y; dot.z = z;
 }
 
-function project(dot, zoom) {
-  const x = dot.bx * zoom;
-  const y = dot.by * zoom;
-  const z = dot.bz * zoom;
-  return { x, y, z };
-}
-
 // --- Hand tracking ---
 function onResults(results) {
   if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
@@ -176,12 +269,25 @@ function onResults(results) {
   }
 
   const lm = results.multiHandLandmarks[0];
-  handX = (lm[0].x - 0.5) * -2;
-  handY = (lm[0].y - 0.5) * -2;
+
+  // Raw positions for puppet control
+  handX_raw = (lm[0].x - 0.5) * -2;
+  handY_raw = (lm[0].y - 0.5) * -2;
+
+  handX = handX_raw;
+  handY = handY_raw;
 
   const dx = lm[8].x - lm[4].x;
   const dy = lm[8].y - lm[4].y;
   handPinch = Math.sqrt(dx * dx + dy * dy);
+
+  // Puppet rod control points
+  headTipX = lm[8].x;  // index tip → head direction
+  headTipY = lm[8].y;
+  lThumbX = lm[4].x;   // thumb → left hand rod
+  lThumbY = lm[4].y;
+  rIndexX = lm[8].x;   // index → right hand rod
+  rIndexY = lm[8].y;
 
   const m = MODES[modeIndex];
   statusEl.textContent = `hand ✓  |  mode: ${m}`;
@@ -210,24 +316,39 @@ function render() {
 
   const angleX = smoothY * Math.PI;
   const angleY = smoothX * Math.PI;
-  const zoom = 0.5 + smoothPinch * 2;
+  const zoom = mode === "human" ? 1.0 : (0.5 + smoothPinch * 2);
 
   hue = (hue + 0.5) % 360;
   clapFlash *= 0.92;
+
+  // Update puppet physics
+  if (mode === "human") {
+    updatePuppet();
+  }
 
   const shape = shapes[mode];
   const projected = [];
 
   for (let i = 0; i < shape.points.length; i++) {
     const p = shape.points[i];
-    const v = project(p, zoom);
-    rotateAll(v, angleX, angleY);
-    projected.push(v);
+
+    if (mode === "human") {
+      // Use spring-animated puppet positions
+      const name = JOINT_NAMES[i];
+      const pp = puppet[name];
+      const v = { x: pp.x, y: pp.y, z: pp.z };
+      rotateAll(v, angleX, angleY);
+      projected.push(v);
+    } else {
+      const v = { x: p.bx * zoom, y: p.by * zoom, z: p.bz * zoom };
+      rotateAll(v, angleX, angleY);
+      projected.push(v);
+    }
   }
 
   // Draw edges
   if (shape.edges.length > 0) {
-    ctx.lineWidth = 2;
+    ctx.lineWidth = mode === "human" ? 2.5 : 2;
     for (let e = 0; e < shape.edges.length; e++) {
       const [a, b] = shape.edges[e];
       const pa = projected[a];
@@ -249,6 +370,45 @@ function render() {
       ctx.lineTo(sxb, syb);
       ctx.stroke();
     }
+
+    // Draw control rods in human mode
+    if (mode === "human") {
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255,255,100,0.3)";
+
+      // Rod from top to head
+      const headP = projected[JOINT_NAMES.indexOf("head")];
+      if (headP.z > 10) {
+        const d = FOCAL / (headP.z + FOCAL);
+        ctx.beginPath();
+        ctx.moveTo(CX + headP.x * d, CY + headP.y * d - 80);
+        ctx.lineTo(CX + headP.x * d, CY + headP.y * d);
+        ctx.stroke();
+      }
+
+      // Rod from left to lWrist
+      const lwP = projected[JOINT_NAMES.indexOf("lWrist")];
+      if (lwP.z > 10) {
+        const d = FOCAL / (lwP.z + FOCAL);
+        ctx.beginPath();
+        ctx.moveTo(CX + lwP.x * d - 60, CY + lwP.y * d);
+        ctx.lineTo(CX + lwP.x * d, CY + lwP.y * d);
+        ctx.stroke();
+      }
+
+      // Rod from right to rWrist
+      const rwP = projected[JOINT_NAMES.indexOf("rWrist")];
+      if (rwP.z > 10) {
+        const d = FOCAL / (rwP.z + FOCAL);
+        ctx.beginPath();
+        ctx.moveTo(CX + rwP.x * d + 60, CY + rwP.y * d);
+        ctx.lineTo(CX + rwP.x * d, CY + rwP.y * d);
+        ctx.stroke();
+      }
+
+      ctx.setLineDash([]);
+    }
   }
 
   // Draw joints
@@ -262,7 +422,8 @@ function render() {
 
     let size;
     if (mode === "human") {
-      size = Math.max(3, (i === 0 ? 8 : 5) * depth);
+      const name = JOINT_NAMES[i];
+      size = name === "head" ? 10 * depth : name.includes("Finger") ? 3 * depth : 5 * depth;
     } else {
       size = Math.max(1.5, (4 + clapFlash * 8) * depth);
     }
