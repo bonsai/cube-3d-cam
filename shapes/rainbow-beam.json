@@ -1,0 +1,9 @@
+{
+  "name":"rainbow-beam","label":"Rainbow","control":"rotate","joints":[],
+  "beams":[
+    {"id":"r","color":"red","angle":0,"length":200,"width":4},{"id":"o","color":"orange","angle":30,"length":180,"width":4},{"id":"y","color":"yellow","angle":60,"length":200,"width":4},{"id":"g","color":"green","angle":90,"length":190,"width":4},
+    {"id":"b","color":"dodgerblue","angle":120,"length":200,"width":4},{"id":"i","color":"indigo","angle":150,"length":175,"width":4},{"id":"v","color":"blueviolet","angle":180,"length":200,"width":4},{"id":"r2","color":"deeppink","angle":210,"length":185,"width":4},
+    {"id":"o2","color":"orangered","angle":240,"length":195,"width":4},{"id":"y2","color":"gold","angle":270,"length":200,"width":4},{"id":"g2","color":"limegreen","angle":300,"length":180,"width":4},{"id":"b2","color":"deepskyblue","angle":330,"length":190,"width":4}
+  ],
+  "scale":1,"origin":{"x":0,"y":0,"z":0},"pulse":true
+}
