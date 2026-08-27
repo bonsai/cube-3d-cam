@@ -38,9 +38,58 @@ let smoothX = 0;
 let smoothY = 0;
 let smoothPinch = 1;
 
+let rainbowMode = false;
+let clapCount = 0;
+let lastClapTime = 0;
+let hue = 0;
+let clapFlash = 0;
+
+// --- Audio clap detection ---
+let audioCtx = null;
+let analyser = null;
+
+async function initAudio() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioCtx = new AudioContext();
+    const source = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    detectClap();
+  } catch (e) {
+    console.warn("mic not available:", e.message);
+  }
+}
+
+function detectClap() {
+  if (!analyser) return;
+
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+
+  const volume = data.reduce((a, b) => a + b, 0) / data.length;
+  const now = performance.now();
+
+  if (volume > 80 && now - lastClapTime > 400) {
+    lastClapTime = now;
+    clapCount++;
+    clapFlash = 1;
+
+    if (clapCount >= 2) {
+      rainbowMode = !rainbowMode;
+      clapCount = 0;
+    }
+  }
+
+  if (now - lastClapTime > 1500) clapCount = 0;
+
+  requestAnimationFrame(detectClap);
+}
+
+// --- Hand tracking ---
 function rotateAll(dot, ax, ay) {
   let { x, y, z } = dot;
-
   const cx = Math.cos(ax), sx = Math.sin(ax);
   const cy = Math.cos(ay), sy = Math.sin(ay);
 
@@ -62,7 +111,6 @@ function onResults(results) {
   }
 
   const lm = results.multiHandLandmarks[0];
-
   const wrist = lm[0];
   const indexTip = lm[8];
   const thumbTip = lm[4];
@@ -74,12 +122,15 @@ function onResults(results) {
   const dy = indexTip.y - thumbTip.y;
   handPinch = Math.sqrt(dx * dx + dy * dy);
 
-  statusEl.textContent = "hand detected";
+  statusEl.textContent = `hand ✓  |  rainbow: ${rainbowMode ? "ON" : "OFF"}  |  clap x2 to toggle`;
   coordsEl.textContent = `x:${handX.toFixed(2)} y:${handY.toFixed(2)} pinch:${handPinch.toFixed(2)}`;
 }
 
+// --- Render ---
 function render() {
-  ctx.fillStyle = "rgba(10,10,10,0.25)";
+  ctx.fillStyle = rainbowMode
+    ? "rgba(5,5,15,0.3)"
+    : "rgba(10,10,10,0.25)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   smoothX += (handX - smoothX) * 0.08;
@@ -90,7 +141,11 @@ function render() {
   const angleY = smoothX * Math.PI;
   const zoom = 0.5 + smoothPinch * 2;
 
-  for (const dot of dots) {
+  hue = (hue + 0.5) % 360;
+  clapFlash *= 0.92;
+
+  for (let i = 0; i < dots.length; i++) {
+    const dot = dots[i];
     dot.x = dot.bx * zoom;
     dot.y = dot.by * zoom;
     dot.z = dot.bz * zoom;
@@ -101,10 +156,18 @@ function render() {
     const depth = FOCAL / (dot.z + FOCAL);
     const sx = CX + dot.x * depth;
     const sy = CY + dot.y * depth;
-    const size = Math.max(1.5, 4 * depth);
+    const size = Math.max(1.5, (4 + clapFlash * 8) * depth);
     const alpha = 0.3 + 0.7 * depth;
 
-    ctx.fillStyle = `rgba(51,255,51,${alpha})`;
+    if (rainbowMode) {
+      const h = (hue + i * 8) % 360;
+      const s = 80 + clapFlash * 20;
+      const l = 50 + depth * 30 + clapFlash * 20;
+      ctx.fillStyle = `hsla(${h},${s}%,${l}%,${alpha})`;
+    } else {
+      ctx.fillStyle = `rgba(51,255,51,${alpha})`;
+    }
+
     ctx.beginPath();
     ctx.arc(sx, sy, size, 0, Math.PI * 2);
     ctx.fill();
@@ -113,6 +176,7 @@ function render() {
   requestAnimationFrame(render);
 }
 
+// --- Init ---
 async function init() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -141,7 +205,8 @@ async function init() {
     });
 
     await camera.start();
-    statusEl.textContent = "camera started — move your hand";
+    await initAudio();
+    statusEl.textContent = "camera + mic ready — clap x2 for rainbow";
     render();
   } catch (e) {
     statusEl.textContent = `error: ${e.message}`;
