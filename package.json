@@ -1,0 +1,17 @@
+{
+  "name": "cube-3d-cam",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1675466862",
+    "@mediapipe/hands": "^0.4.1675469240"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}
