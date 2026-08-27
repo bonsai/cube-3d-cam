@@ -1,28 +1,17 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-
 :root{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-
 body{background:#050507;color:#33ff66;min-height:100vh;overflow:hidden}
-
 #webcam{position:fixed;right:14px;top:14px;width:180px;height:135px;object-fit:cover;transform:scaleX(-1);opacity:.18;border:1px solid #33ff6633;border-radius:8px;z-index:20;transition:opacity .2s}
 #webcam.visible{opacity:.75}
-
-#screen{display:block;position:fixed;inset:0;width:100vw;height:100vh}
-
+#screen,#knowledge-graph{display:block;position:fixed;inset:0;width:100vw;height:100vh}
+#knowledge-graph{display:none;z-index:5;cursor:crosshair}
 #hud{position:fixed;top:16px;left:16px;display:flex;flex-direction:column;gap:5px;font-size:12px;z-index:30;text-shadow:0 0 8px #33ff6680}
-#hud strong{font-size:14px;letter-spacing:.12em}
-#status{opacity:.85}
-#coords,#gesture{opacity:.55}
-
+#hud strong{font-size:14px;letter-spacing:.12em}#status{opacity:.85}#coords,#gesture,#graph-status{opacity:.65}
 #help{position:fixed;top:16px;right:210px;display:flex;flex-direction:column;gap:3px;align-items:flex-end;font-size:10px;color:#33ff6680;z-index:30}
-
 #controls{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;z-index:30}
 #modes{display:flex;gap:4px;background:#00000099;border:1px solid #33ff6633;border-radius:7px;padding:4px;backdrop-filter:blur(8px)}
-
 button{font-family:inherit;font-size:12px;padding:7px 13px;border:1px solid #33ff6633;border-radius:5px;background:#0008;color:#33ff6688;cursor:pointer;transition:.15s}
-button:hover{background:#33ff6618;color:#33ff66;border-color:#33ff6688}
-.mode-btn.active{background:#33ff6625;color:#33ff66;border-color:#33ff66;box-shadow:0 0 12px #33ff6630}
+button:hover{background:#33ff6618;color:#33ff66;border-color:#33ff6688}.mode-btn.active{background:#33ff6625;color:#33ff66;border-color:#33ff66;box-shadow:0 0 12px #33ff6630}
 #rainbow-btn.on{background:linear-gradient(90deg,#f44,#fa4,#ff4,#4f8,#48f,#a6f);color:white;border-color:transparent;font-weight:bold}
 #camera-btn.on{background:#33ff6630;color:#33ff66;border-color:#33ff66}
-
 @media(max-width:700px){#help{display:none}#webcam{width:120px;height:90px;right:8px;top:8px}.mode-btn{padding:6px 8px}#controls{bottom:12px}}
