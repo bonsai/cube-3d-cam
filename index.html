@@ -1,29 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cube Camera Mode</title>
+  <title>Cube Camera Mode — MediaPipe Motion</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <video id="webcam" autoplay playsinline></video>
+  <video id="webcam" autoplay playsinline muted></video>
   <canvas id="screen"></canvas>
+
   <div id="hud">
-    <span id="status">loading mediapipe...</span>
+    <strong>MEDIA → MOTION</strong>
+    <span id="status">MediaPipeを初期化中…</span>
     <span id="coords"></span>
+    <span id="gesture"></span>
   </div>
+
+  <div id="help">
+    <span>手を左右 → 回転</span>
+    <span>手を上下 → 傾き</span>
+    <span>親指＋人差し指 → ズーム</span>
+    <span>両手 → スケール</span>
+    <span>F / R → モード / 色</span>
+  </div>
+
   <div id="controls">
     <div id="modes">
-      <button class="mode-btn active" data-mode="dots">dots</button>
-      <button class="mode-btn" data-mode="cube">cube</button>
+      <button class="mode-btn active" data-mode="cube">cube</button>
+      <button class="mode-btn" data-mode="dots">dots</button>
       <button class="mode-btn" data-mode="human">human</button>
     </div>
     <button id="rainbow-btn">rainbow</button>
+    <button id="camera-btn">camera</button>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="main.js"></script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
