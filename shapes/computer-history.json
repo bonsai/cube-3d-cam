@@ -1,0 +1,43 @@
+{
+  "name": "computer-history",
+  "label": "Computer History",
+  "control": "graph",
+  "nodes": [
+    {"id":"boole","label":"George Boole","year":1854,"type":"person"},
+    {"id":"boolean-algebra","label":"Boolean Algebra","year":1854,"type":"concept"},
+    {"id":"shannon","label":"Claude Shannon","year":1937,"type":"person"},
+    {"id":"turing","label":"Alan Turing","year":1936,"type":"person"},
+    {"id":"eniac","label":"ENIAC","year":1946,"type":"technology"},
+    {"id":"von-neumann","label":"John von Neumann","year":1945,"type":"person"},
+    {"id":"backus","label":"John Backus","year":1957,"type":"person"},
+    {"id":"dijkstra","label":"Edsger Dijkstra","year":1968,"type":"person"},
+    {"id":"hoare","label":"C. A. R. Hoare","year":1969,"type":"person"},
+    {"id":"dahl","label":"Ole-Johan Dahl","year":1967,"type":"person"},
+    {"id":"wirth","label":"Niklaus Wirth","year":1970,"type":"person"},
+    {"id":"kay","label":"Alan Kay","year":1972,"type":"person"},
+    {"id":"c","label":"C","year":1972,"type":"technology"},
+    {"id":"unix","label":"UNIX","year":1970,"type":"technology"},
+    {"id":"smalltalk","label":"Smalltalk","year":1972,"type":"technology"},
+    {"id":"java","label":"Java","year":1995,"type":"technology"},
+    {"id":"ruby","label":"Ruby","year":1995,"type":"technology"},
+    {"id":"python","label":"Python","year":1991,"type":"technology"}
+  ],
+  "edges": [
+    ["boole","boolean-algebra"],
+    ["boolean-algebra","shannon"],
+    ["shannon","eniac"],
+    ["turing","eniac"],
+    ["eniac","von-neumann"],
+    ["backus","wirth"],
+    ["dijkstra","hoare"],
+    ["dahl","smalltalk"],
+    ["kay","smalltalk"],
+    ["dahl","kay"],
+    ["backus","c"],
+    ["c","unix"],
+    ["unix","c"],
+    ["kay","java"],
+    ["kay","ruby"],
+    ["kay","python"]
+  ]
+}
