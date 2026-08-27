@@ -1,0 +1,6 @@
+{
+  "name": "dots",
+  "label": "Dots",
+  "control": "rotate",
+  "grid": { "x": 4, "y": 4, "z": 4, "scale": 30 }
+}
