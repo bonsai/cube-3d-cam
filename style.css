@@ -32,3 +32,50 @@ body{
 
 #status{opacity:0.6}
 #coords{opacity:0.4}
+
+#controls{
+  position:absolute;
+  bottom:24px;left:50%;
+  transform:translateX(-50%);
+  display:flex;gap:12px;align-items:center;
+  z-index:10;
+}
+
+#modes{
+  display:flex;gap:4px;
+  background:rgba(0,0,0,0.5);
+  border:1px solid #33ff3340;
+  border-radius:6px;
+  padding:4px;
+}
+
+.mode-btn,.#rainbow-btn{
+  font-family:monospace;font-size:13px;
+  padding:6px 14px;
+  border:1px solid #33ff3340;
+  border-radius:4px;
+  background:transparent;
+  color:#33ff3380;
+  cursor:pointer;
+  transition:all .15s;
+}
+
+.mode-btn:hover,#rainbow-btn:hover{
+  background:#33ff3318;
+  color:#33ff33;
+  border-color:#33ff3380;
+}
+
+.mode-btn.active{
+  background:#33ff3325;
+  color:#33ff33;
+  border-color:#33ff33;
+  box-shadow:0 0 8px #33ff3330;
+}
+
+#rainbow-btn.on{
+  background:linear-gradient(90deg,red,orange,yellow,green,blue,purple);
+  color:#fff;
+  border-color:transparent;
+  font-weight:bold;
+}

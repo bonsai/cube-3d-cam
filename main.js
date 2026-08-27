@@ -184,7 +184,7 @@ function onResults(results) {
   handPinch = Math.sqrt(dx * dx + dy * dy);
 
   const m = MODES[modeIndex];
-  statusEl.textContent = `hand ✓  |  mode: ${m}  |  clap x2: rainbow  x3: mode`;
+  statusEl.textContent = `hand ✓  |  mode: ${m}`;
   coordsEl.textContent = `x:${handX.toFixed(2)} y:${handY.toFixed(2)} pinch:${handPinch.toFixed(2)}`;
 }
 
@@ -307,7 +307,22 @@ async function init() {
 
     await camera.start();
     await initAudio();
-    statusEl.textContent = "camera + mic ready — clap x2: rainbow  x3: mode";
+
+    // UI button handlers
+    document.querySelectorAll(".mode-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        modeIndex = MODES.indexOf(btn.dataset.mode);
+        document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    document.getElementById("rainbow-btn").addEventListener("click", () => {
+      rainbowMode = !rainbowMode;
+      document.getElementById("rainbow-btn").classList.toggle("on", rainbowMode);
+    });
+
+    statusEl.textContent = "camera + mic ready";
     render();
   } catch (e) {
     statusEl.textContent = `error: ${e.message}`;
