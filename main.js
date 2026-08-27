@@ -1,5 +1,5 @@
-import { Hands } from "@mediapipe/hands";
-import { Camera } from "@mediapipe/camera_utils";
+const { Hands } = window;
+const { Camera } = window;
 
 const GRID = 4;
 const SCALE = 30;
